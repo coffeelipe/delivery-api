@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CreateOrders < ActiveRecord::Migration[8.1]
   def change
     create_table :orders, id: :string do |t|
