@@ -7,3 +7,16 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+require 'json'
+
+json_file_path = Rails.root.join('db', 'seeds', 'pedidos.json')
+data = JSON.parse(File.read(json_file_path))
+
+data.each do |entry|
+  Order.find_or_create_by!(
+    id: entry['order_id'],
+    store_id: entry['store_id'],
+    details: entry['order']
+  )
+end
