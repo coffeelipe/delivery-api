@@ -19,5 +19,20 @@ RSpec.describe Order, type: :model do
         expect(duplicate_order).not_to be_valid
       end
     end
+
+    it 'is invalid without a store_id' do
+      order = build(:order, store_id: nil)
+      expect(order).not_to be_valid
+    end
+
+    it 'is invalid without details' do
+      order = build(:order, details: nil)
+      expect(order).not_to be_valid
+    end
+
+    it 'is invalid without order_id' do
+      order = build(:order, id: nil)
+      expect(order).not_to be_valid
+    end
   end
 end

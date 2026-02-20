@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :order do
-    store_id { 'MyString' }
-    details { '' }
+    sequence(:id) { Faker::Internet.uuid }
+    store_id { Faker::Internet.uuid }
+    details { { items: [] } }
   end
 end
