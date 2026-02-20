@@ -8,5 +8,10 @@ RSpec.describe 'Orders', type: :request do
       get orders_path
       expect(response).to have_http_status(200)
     end
+
+    it 'responds as JSON' do
+      get orders_path, headers: { 'ACCEPT' => 'application/json' }
+      expect(response.content_type).to eq('application/json; charset=utf-8')
+    end
   end
 end
