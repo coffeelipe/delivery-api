@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 class Order < ApplicationRecord
   before_create :generate_uuid
+
+  validates :id, uniqueness: true
 
   private
 
