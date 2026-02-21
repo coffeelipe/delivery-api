@@ -20,6 +20,10 @@ class Order < ApplicationRecord
   def generate_uuid
     self.id = SecureRandom.uuid if id.blank?
   end
+
+  def initialize_details
+    details['order_id'] ||= id
+    details['statuses'] ||= []
   end
 
   def set_initial_status
