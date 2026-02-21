@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
+  STATUSES = {
+    received: 'RECEIVED',
+    confirmed: 'CONFIRMED',
+    dispatched: 'DISPATCHED',
+    delivered: 'DELIVERED',
+    canceled: 'CANCELED'
+  }.freeze
+
   before_create :generate_uuid, :set_initial_status
 
   validates :id, presence: true, uniqueness: true
@@ -14,6 +22,6 @@ class Order < ApplicationRecord
   end
 
   def set_initial_status
-    details['last_status_name'] = 'RECEIVED'
+    StatusAppender.new.append(id, name: STATUSES[:received], origin: 'STORE')
   end
 end
