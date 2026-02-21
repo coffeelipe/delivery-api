@@ -9,7 +9,9 @@ class Order < ApplicationRecord
     canceled: 'CANCELED'
   }.freeze
 
-  before_create :generate_uuid, :set_initial_status
+  before_validation :generate_uuid, on: :create
+  before_create :initialize_details
+  after_create :set_initial_status
 
   validates :id, presence: true, uniqueness: true
   validates :store_id, presence: true
@@ -28,5 +30,6 @@ class Order < ApplicationRecord
 
   def set_initial_status
     StatusAppender.new.append(id, name: STATUSES[:received], origin: 'STORE')
+    reload
   end
 end
