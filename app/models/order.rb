@@ -24,7 +24,7 @@ class Order < ApplicationRecord
   end
 
   def initialize_details
-    details['order_id'] ||= id
+    details['order_id'] = id  # Always sync to match the database id
     details['statuses'] ||= []
   end
 
