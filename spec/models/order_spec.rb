@@ -13,7 +13,7 @@ RSpec.describe Order, type: :model do
   describe 'callbacks' do
     it 'sets last_status_name to RECEIVED on creation' do
       order = create(:order)
-      expect(order.details['last_status_name']).to eq('RECEIVED')
+      expect(order.details['last_status_name']).to eq(Order::STATUSES[:received])
     end
 
     it 'sets the id as a uuid on creation' do
