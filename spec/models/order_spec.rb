@@ -10,6 +10,19 @@ RSpec.describe Order, type: :model do
     end
   end
 
+  describe 'callbacks' do
+    it 'sets last_status_name to RECEIVED on creation' do
+      order = create(:order)
+      expect(order.details['last_status_name']).to eq('RECEIVED')
+    end
+
+    it 'sets the id as a uuid on creation' do
+      order = build(:order, id: nil)
+      order.save
+      expect(order.id).to match(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/)
+    end
+  end
+
   describe 'validations' do
     context 'when order entry already exists' do
       let(:existing_order) { create(:order) }
