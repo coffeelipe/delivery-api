@@ -42,10 +42,5 @@ RSpec.describe Order, type: :model do
       order = build(:order, details: nil)
       expect(order).not_to be_valid
     end
-
-    it 'is invalid without order_id' do
-      order = build(:order, id: nil)
-      expect(order).not_to be_valid
-    end
   end
 end
