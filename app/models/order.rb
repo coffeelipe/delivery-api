@@ -18,7 +18,8 @@ class Order < ApplicationRecord
   private
 
   def generate_uuid
-    self.id = SecureRandom.uuid
+    self.id = SecureRandom.uuid if id.blank?
+  end
   end
 
   def set_initial_status
