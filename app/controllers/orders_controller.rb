@@ -6,6 +6,11 @@ class OrdersController < ApplicationController
     render json: @orders
   end
 
+  def show
+    order = Order.find(params[:id])
+    render json: order
+  end
+
   def append_status
     order = Order.find(params[:id])
     state_machine = StateMachine.new
