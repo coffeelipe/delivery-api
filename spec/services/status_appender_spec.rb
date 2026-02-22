@@ -22,7 +22,6 @@ RSpec.describe StatusAppender do
       expected_flow.each do |status|
         result = appender.append(order.id, name: status, origin: 'STORE')
         order.reload # Reload to see updated data
-        puts order.details['statuses'].map { |s| s['name'] }.join(' -> ')
         expect(result.details['last_status_name']).to eq(status)
         expect(order.details['statuses'].last['name']).to eq(status)
       end
