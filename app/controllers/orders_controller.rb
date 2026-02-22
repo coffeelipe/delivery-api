@@ -22,6 +22,11 @@ class OrdersController < ApplicationController
     puts order.to_json
   end
 
+  def destroy
+    order = Order.find(params[:id])
+    order.destroy
+    head :no_content
+  end
 
   def append_status # rubocop:disable Metrics/AbcSize
     order = Order.find(params[:id])
