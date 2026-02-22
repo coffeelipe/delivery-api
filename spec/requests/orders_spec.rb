@@ -40,4 +40,21 @@ RSpec.describe 'Orders', type: :request do
       expect(json_response['details']['last_status_name']).to eq(Order::STATUSES[:canceled])
     end
   end
+
+  describe 'POST /orders' do
+    it 'creates a new order' do
+      post orders_path, params: { store_id: 'test_store', details: { items: [] } },
+                        headers: { 'ACCEPT' => 'application/json' }
+      expect(response).to have_http_status(201)
+      expect(response.content_type).to eq('application/json; charset=utf-8')
+
+      json_response = JSON.parse(response.body)
+      expect(json_response['store_id']).to eq('test_store')
+      expect(json_response['details']['items']).to eq([])
+      expect(json_response['details']['statuses'].length).to eq(1)
+      expect(json_response['details']['statuses'].first['name']).to eq(Order::STATUSES[:received])
+      expect(json_response['details']['last_status_name']).to eq(Order::STATUSES[:received])
+    end
+  end
+
 end
