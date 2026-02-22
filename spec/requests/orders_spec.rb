@@ -18,7 +18,7 @@ RSpec.describe 'Orders', type: :request do
   describe 'PATCH /orders/:id/status' do
     let(:order) { create(:order) }
 
-    it 'appends a new status to the order' do
+    it 'appends a new status to the order if cancel is false' do
       patch status_order_path(order.id), headers: { 'ACCEPT' => 'application/json' }
       expect(response).to have_http_status(200)
       expect(response.content_type).to eq('application/json; charset=utf-8')
@@ -27,6 +27,17 @@ RSpec.describe 'Orders', type: :request do
       expect(json_response['details']['statuses'].length).to eq(2)
       expect(json_response['details']['statuses'].last['name']).to eq(Order::STATUSES[:confirmed])
       expect(json_response['details']['last_status_name']).to eq(Order::STATUSES[:confirmed])
+    end
+
+    it 'appends a cancellation status to the order if cancel is true' do
+      patch status_order_path(order.id), params: { cancel: true }, headers: { 'ACCEPT' => 'application/json' }
+      expect(response).to have_http_status(200)
+      expect(response.content_type).to eq('application/json; charset=utf-8')
+
+      json_response = JSON.parse(response.body)
+      expect(json_response['details']['statuses'].length).to eq(2)
+      expect(json_response['details']['statuses'].last['name']).to eq(Order::STATUSES[:canceled])
+      expect(json_response['details']['last_status_name']).to eq(Order::STATUSES[:canceled])
     end
   end
 end
