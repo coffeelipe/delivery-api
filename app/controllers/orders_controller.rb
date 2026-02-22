@@ -11,10 +11,18 @@ class OrdersController < ApplicationController
     render json: order
   end
 
-  def append_status
+  def append_status # rubocop:disable Metrics/AbcSize
     order = Order.find(params[:id])
     state_machine = StateMachine.new
-    state_machine.transition_order(order.details['last_status_name'], order.id)
+    return if state_machine.terminal_state?(order.details['last_status_name'])
+
+    if params[:cancel].to_s == 'true' || params[:cancel] == true
+
+      state_machine.cancel_order(order.details['last_status_name'], order.id)
+
+    else
+      state_machine.transition_order(order.details['last_status_name'], order.id)
+    end
     order.reload
     render json: order
   end
