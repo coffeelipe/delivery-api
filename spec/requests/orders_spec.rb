@@ -57,4 +57,13 @@ RSpec.describe 'Orders', type: :request do
     end
   end
 
+  describe 'DELETE /orders/:id' do
+    let(:order) { create(:order) }
+
+    it 'deletes the order' do
+      delete order_path(order.id)
+      expect(response).to have_http_status(204)
+      expect(Order.find_by(id: order.id)).to be_nil
+    end
+  end
 end
