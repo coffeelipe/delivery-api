@@ -11,6 +11,18 @@ class OrdersController < ApplicationController
     render json: order
   end
 
+  def create
+    order = Order.create!(
+      store_id: params[:store_id],
+      details: {
+        items: Array(params.dig(:details, :items)).reject(&:blank?)
+      }
+    )
+    render json: order, status: :created
+    puts order.to_json
+  end
+
+
   def append_status # rubocop:disable Metrics/AbcSize
     order = Order.find(params[:id])
     state_machine = StateMachine.new
