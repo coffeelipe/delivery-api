@@ -19,6 +19,10 @@ class StateMachine
     allowed_transitions.include?(new_status)
   end
 
+  def terminal_state?(status)
+    TRANSITIONS[status].empty?
+  end
+
   def cancel_order(current_status, order_id)
     @appender.append(order_id, name: Order::STATUSES[:canceled], origin: @origin) if cancelable?(current_status)
   end
@@ -40,9 +44,5 @@ class StateMachine
 
   def cancelable?(status)
     TRANSITIONS[status]&.include?(Order::STATUSES[:canceled])
-  end
-
-  def terminal_state?(status)
-    TRANSITIONS[status].empty?
   end
 end
