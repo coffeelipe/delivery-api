@@ -24,11 +24,14 @@ class Order < ApplicationRecord
   end
 
   def initialize_details
-    details['order_id'] = id  # Always sync to match the database id
+    details['order_id'] = id # Always sync to match the database id
     details['statuses'] ||= []
   end
 
   def set_initial_status
+    # Only add initial status if this is a truly new order (no statuses yet)
+    return if details['statuses'].present?
+
     StatusAppender.new.append(id, name: STATUSES[:received], origin: 'STORE')
     reload
   end
