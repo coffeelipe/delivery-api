@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/models/order.dart';
+import 'package:intl/intl.dart';
 
 class OrderDialog extends StatelessWidget {
   final Order order;
@@ -15,10 +16,23 @@ class OrderDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customer = order.rawDetails['customer'] as Map<String, dynamic>?;
+    final items = order.rawDetails['items'] as List<dynamic>? ?? [];
+    final payments = order.rawDetails['payments'] as List<dynamic>? ?? [];
+    final store = order.rawDetails['store'] as Map<String, dynamic>?;
+    final deliveryAddress =
+        order.rawDetails['delivery_address'] as Map<String, dynamic>?;
+    final statuses = order.rawDetails['statuses'] as List<dynamic>? ?? [];
+
     return AlertDialog(
       title: Row(
         children: [
-          Text('Pedido #${order.id.substring(0, 6)}...'),
+          Expanded(
+            child: Text(
+              'Pedido #${order.id.substring(0, 8)}...',
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
           IconButton(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: order.id));
@@ -26,10 +40,11 @@ class OrderDialog extends StatelessWidget {
                 const SnackBar(
                   content: Text('ID copiado para a área de transferência!'),
                   backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
                 ),
               );
             },
-            icon: const Icon(Icons.copy_rounded),
+            icon: const Icon(Icons.copy_rounded, size: 20),
             tooltip: 'Copiar ID completo',
           ),
         ],
