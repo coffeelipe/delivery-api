@@ -45,7 +45,7 @@ class OrdersService {
   // Create a new order
   Future<Order> createOrder({
     required String storeId,
-    required List<Map<String, dynamic>> items,
+    required Map<String, dynamic> details,
   }) async {
     try {
       final response = await http.post(
@@ -53,9 +53,7 @@ class OrdersService {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'store_id': storeId,
-          'details': {
-            'items': items,
-          },
+          'details': details,
         }),
       );
 
