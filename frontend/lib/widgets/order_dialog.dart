@@ -49,21 +49,64 @@ class OrderDialog extends StatelessWidget {
           ),
         ],
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Cliente: ${order.customerName}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+      content: SingleChildScrollView(
+        child: SizedBox(
+          width: 500,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Customer Section
+              _buildSectionTitle('Cliente'),
+              _buildInfoRow('Nome', order.customerName),
+              if (customer?['temporary_phone'] != null)
+                _buildInfoRow('Telefone', customer!['temporary_phone']),
+
+              const SizedBox(height: 16),
+
+              // Items Section
+              if (items.isNotEmpty) ...[
+                _buildSectionTitle('Itens do Pedido'),
+                ...items.map((item) => _buildItemCard(item)),
+                const SizedBox(height: 16),
+              ],
+
+              // Payment Section
+              if (payments.isNotEmpty) ...[
+                _buildSectionTitle('Pagamento'),
+                ...payments.map((payment) => _buildPaymentInfo(payment)),
+                const SizedBox(height: 16),
+              ],
+
+              // Store Section
+              if (store != null && store['name'] != null) ...[
+                _buildSectionTitle('Loja'),
+                _buildInfoRow('Nome', store['name']),
+                const SizedBox(height: 16),
+              ],
+
+              // Delivery Address Section
+              if (deliveryAddress != null) ...[
+                _buildSectionTitle('Endereço de Entrega'),
+                _buildAddressInfo(deliveryAddress),
+                const SizedBox(height: 16),
+              ],
+
+              // Order Info
+              _buildSectionTitle('Informações do Pedido'),
+              _buildInfoRow('Status', order.statusLabel),
+              _buildInfoRow('Total', 'R\$ ${order.total.toStringAsFixed(2)}'),
+              _buildInfoRow('Data/Hora', _formatDate(order.timestamp)),
+
+              // Status History
+              if (statuses.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                _buildSectionTitle('Histórico de Status'),
+                ...statuses.map((status) => _buildStatusHistory(status)),
+              ],
+            ],
           ),
-          const SizedBox(height: 8),
-          Text('Detalhes: ${order.details}'),
-          const SizedBox(height: 8),
-          Text('Total: \$${order.total.toStringAsFixed(2)}'),
-          const SizedBox(height: 8),
-          Text('Status: ${order.statusLabel}'),
-        ],
+        ),
       ),
       actions: [
         if (order.status == OrderStatus.received)
