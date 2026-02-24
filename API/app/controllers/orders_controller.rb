@@ -12,11 +12,13 @@ class OrdersController < ApplicationController
   end
 
   def create
+    details_params = params[:details] || {}
+
+    # for simplicity, I'm not validating details
+    # given more time, I would break down details into a separate model
     order = Order.create!(
       store_id: params[:store_id],
-      details: {
-        items: Array(params.dig(:details, :items)).reject(&:blank?)
-      }
+      details: details_params.to_unsafe_h
     )
     render json: order, status: :created
     puts order.to_json
