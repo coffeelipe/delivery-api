@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/widgets/order_dialog.dart';
 import 'package:frontend/widgets/stat_card.dart';
 import '../models/order.dart';
 import '../widgets/dashboard_column.dart';
@@ -148,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                         onMoveToNextStatus: _moveToNextStatus,
                       ),
                       DashboardColumn(
-                        title: 'EM ROTA',
+                        title: 'DESPACHADO',
                         orders: _getOrdersByStatus(OrderStatus.dispatched),
                         color: Colors.purple,
                         icon: Icons.local_shipping_outlined,
@@ -204,78 +205,10 @@ class _HomePageState extends State<HomePage> {
   void _showOrderDialog(Order order) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Pedido #${order.id.substring(0, 8)}...'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Cliente: ${order.customerName}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Detalhes: ${order.details}'),
-            const SizedBox(height: 8),
-            Text('Total: \$${order.total.toStringAsFixed(2)}'),
-            const SizedBox(height: 8),
-            Text('Status: ${order.statusLabel}'),
-            const SizedBox(height: 16),
-            if (order.status != OrderStatus.delivered &&
-                order.status != OrderStatus.canceled)
-              const Text(
-                'Mover para:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-          ],
-        ),
-        actions: [
-          if (order.status == OrderStatus.received)
-            TextButton.icon(
-              onPressed: () async {
-                Navigator.pop(context);
-                await _updateOrderStatus(order);
-              },
-              icon: const Icon(Icons.check_circle),
-              label: const Text('Confirmar'),
-              style: TextButton.styleFrom(foregroundColor: Colors.blue),
-            ),
-          if (order.status == OrderStatus.confirmed)
-            TextButton.icon(
-              onPressed: () async {
-                Navigator.pop(context);
-                await _updateOrderStatus(order);
-              },
-              icon: const Icon(Icons.local_shipping),
-              label: const Text('Em Rota'),
-              style: TextButton.styleFrom(foregroundColor: Colors.purple),
-            ),
-          if (order.status == OrderStatus.dispatched)
-            TextButton.icon(
-              onPressed: () async {
-                Navigator.pop(context);
-                await _updateOrderStatus(order);
-              },
-              icon: const Icon(Icons.done_all),
-              label: const Text('Entregar'),
-              style: TextButton.styleFrom(foregroundColor: Colors.green),
-            ),
-          if (order.status != OrderStatus.delivered &&
-              order.status != OrderStatus.canceled)
-            TextButton.icon(
-              onPressed: () async {
-                Navigator.pop(context);
-                await _cancelOrder(order);
-              },
-              icon: const Icon(Icons.cancel),
-              label: const Text('Cancelar'),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Fechar'),
-          ),
-        ],
+      builder: (context) => OrderDialog(
+        order: order,
+        onUpdateStatus: _updateOrderStatus,
+        onCancel: _cancelOrder,
       ),
     );
   }
