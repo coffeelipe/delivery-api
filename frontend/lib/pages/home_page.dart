@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/widgets/new_order_dialog.dart';
 import 'package:frontend/widgets/order_dialog.dart';
 import 'package:frontend/widgets/stat_card.dart';
 import '../models/order.dart';
@@ -139,6 +140,7 @@ class _HomePageState extends State<HomePage> {
                         icon: Icons.inbox,
                         onOrderTap: _showOrderDialog,
                         onMoveToNextStatus: _moveToNextStatus,
+                        onCreateOrder: _showNewOrderDialog,
                       ),
                       DashboardColumn(
                         title: 'CONFIRMADO',
@@ -263,5 +265,45 @@ class _HomePageState extends State<HomePage> {
 
   void _moveToNextStatus(Order order) async {
     await _updateOrderStatus(order);
+  }
+
+  void _showNewOrderDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => NewOrderDialog(
+        onCreateOrder: _createOrder,
+      ),
+    );
+  }
+
+  Future<void> _createOrder({
+    required String storeId,
+    required Map<String, dynamic> details,
+  }) async {
+    try {
+      await _ordersService.createOrder(
+        storeId: storeId,
+        details: details,
+      );
+      await _loadOrders();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pedido criado com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao criar pedido: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      rethrow;
+    }
   }
 }
