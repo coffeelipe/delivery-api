@@ -152,4 +152,65 @@ class OrderDialog extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildItemCard(dynamic item) {
+    final name = item['name'] ?? 'Item';
+    final quantity = item['quantity'] ?? 1;
+    final price = item['price'] ?? 0.0;
+    final totalPrice = item['total_price'] ?? (price * quantity);
+    final observations = item['observations'];
+    final discount = item['discount'] ?? 0;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '$quantity x $name',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                Text(
+                  'R\$ ${totalPrice.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+            if (discount > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Desconto: R\$ ${discount.toStringAsFixed(2)}',
+                  style: const TextStyle(fontSize: 12, color: Colors.orange),
+                ),
+              ),
+            if (observations != null && observations.toString().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Obs: $observations',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }
