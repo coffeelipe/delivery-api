@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/widgets/mark_button.dart';
 import 'package:intl/intl.dart';
 import '../models/order.dart';
+import '../models/store.dart';
 
 class OrderCard extends StatelessWidget {
   final Order order;
@@ -32,6 +33,15 @@ class OrderCard extends StatelessWidget {
       case OrderStatus.canceled:
         return Colors.red;
     }
+  }
+
+  String? _getStoreName() {
+    final storeData = order.rawDetails['store'] as Map<String, dynamic>?;
+    if (storeData != null && storeData['id'] != null) {
+      final store = Stores.findById(storeData['id']);
+      return store?.name;
+    }
+    return null;
   }
 
   @override
@@ -106,6 +116,26 @@ class OrderCard extends StatelessWidget {
                   ),
                 ],
               ),
+              if (_getStoreName() != null) ...[
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(Icons.store, size: 14, color: Colors.grey[500]),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        _getStoreName()!,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 8),
               Text(
                 order.details,
