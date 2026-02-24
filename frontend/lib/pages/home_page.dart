@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   List<Order> orders = [];
   bool _isLoading = true;
   String? _errorMessage;
+  bool _debugMode = false;
 
   @override
   void initState() {
@@ -41,6 +42,27 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: Icon(
+              Icons.bug_report,
+              color: _debugMode ? Colors.red : Colors.black87,
+            ),
+            onPressed: () {
+              setState(() {
+                _debugMode = !_debugMode;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    _debugMode ? 'Modo Debug Ativado' : 'Modo Debug Desativado',
+                  ),
+                  backgroundColor: _debugMode ? Colors.orange : Colors.grey,
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            },
+            tooltip: 'Modo Debug',
+          ),
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.black87),
             onPressed: _loadOrders,
@@ -82,6 +104,40 @@ class _HomePageState extends State<HomePage> {
             )
           : Column(
               children: [
+                // Debug Mode Banner
+                if (_debugMode)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    color: Colors.orange.shade100,
+                    child: Row(
+                      children: [
+                        Icon(Icons.bug_report, color: Colors.orange.shade700, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            '🔧 Modo Debug Ativo: Clique em qualquer pedido para ver a opção "Excluir do DB"',
+                            style: TextStyle(
+                              color: Colors.orange.shade900,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, size: 18, color: Colors.orange.shade700),
+                          onPressed: () {
+                            setState(() {
+                              _debugMode = false;
+                            });
+                          },
+                          tooltip: 'Desativar Modo Debug',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                  ),
                 // Stats Summary
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -211,6 +267,8 @@ class _HomePageState extends State<HomePage> {
         order: order,
         onUpdateStatus: _updateOrderStatus,
         onCancel: _cancelOrder,
+        debugMode: _debugMode,
+        onDelete: _debugMode ? () => _deleteOrder(order) : null,
       ),
     );
   }
@@ -265,6 +323,58 @@ class _HomePageState extends State<HomePage> {
 
   void _moveToNextStatus(Order order) async {
     await _updateOrderStatus(order);
+  }
+
+  Future<void> _deleteOrder(Order order) async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar Exclusão'),
+        content: Text(
+          'Tem certeza que deseja excluir o pedido #${order.id.substring(0, 8)}?\n\nEsta ação não pode ser desfeita.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _ordersService.deleteOrder(order.id);
+        await _loadOrders();
+        if (mounted) {
+          Navigator.pop(context); // Close the order dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Pedido excluído com sucesso!'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Erro ao excluir pedido: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
   void _showNewOrderDialog() {

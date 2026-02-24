@@ -7,11 +7,16 @@ class OrderDialog extends StatelessWidget {
   final Order order;
   final Future<void> Function(Order) onUpdateStatus;
   final Future<void> Function(Order) onCancel;
+  final bool debugMode;
+  final VoidCallback? onDelete;
+
   const OrderDialog({
     super.key,
     required this.order,
     required this.onUpdateStatus,
     required this.onCancel,
+    this.debugMode = false,
+    this.onDelete,
   });
 
   @override
@@ -150,6 +155,18 @@ class OrderDialog extends StatelessWidget {
             label: const Text('Cancelar'),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
           ),
+        if (debugMode && onDelete != null) ...[
+          const Spacer(),
+          TextButton.icon(
+            onPressed: onDelete,
+            icon: const Icon(Icons.delete_forever),
+            label: const Text('Excluir do DB'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+              backgroundColor: Colors.red.shade50,
+            ),
+          ),
+        ],
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Fechar'),
