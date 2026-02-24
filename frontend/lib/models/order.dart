@@ -7,6 +7,7 @@ class Order {
   final DateTime timestamp;
   OrderStatus status;
   final double total;
+  final Map<String, dynamic> rawDetails; // Store full JSON details
 
   Order({
     required this.id,
@@ -15,6 +16,7 @@ class Order {
     required this.timestamp,
     required this.status,
     required this.total,
+    this.rawDetails = const {},
   });
 
   String get statusLabel {
@@ -77,6 +79,7 @@ class Order {
           : DateTime.now(),
       status: _parseStatus(lastStatusName),
       total: totalPrice.toDouble(),
+      rawDetails: details, // Store the full details JSON
     );
   }
 
