@@ -85,4 +85,34 @@ class OrdersService {
     }
   }
 
+  // Update order status (transition to next status)
+  Future<Order> updateOrderStatus(String id, {bool cancel = false}) async {
+    try {
+      final response = await http.patch(
+        Uri.parse('$baseUrl/orders/$id/status'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'cancel': cancel,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return Order.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to update order status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error updating order status: $e');
+    }
+  }
+
+  // Advance order to next status
+  Future<Order> advanceOrderStatus(String id) async {
+    return updateOrderStatus(id, cancel: false);
+  }
+
+  // Cancel order
+  Future<Order> cancelOrder(String id) async {
+    return updateOrderStatus(id, cancel: true);
+  }
 }
