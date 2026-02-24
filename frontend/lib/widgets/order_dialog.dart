@@ -213,4 +213,54 @@ class OrderDialog extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildPaymentInfo(dynamic payment) {
+    final value = payment['value'] ?? 0.0;
+    final origin = payment['origin'] ?? 'N/A';
+    final prepaid = payment['prepaid'] ?? false;
+
+    return Card(
+      color: Colors.green.shade50,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Icon(
+              prepaid ? Icons.check_circle : Icons.access_time,
+              color: prepaid ? Colors.green : Colors.orange,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _formatPaymentMethod(origin),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    prepaid ? 'Pago' : 'Pendente',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: prepaid ? Colors.green : Colors.orange,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              'R\$ ${value.toStringAsFixed(2)}',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }
