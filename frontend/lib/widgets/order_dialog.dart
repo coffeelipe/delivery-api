@@ -114,4 +114,18 @@ class OrderDialog extends StatelessWidget {
       ],
     );
   }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Colors.blue,
+        ),
+      ),
+    );
+  }
 }
