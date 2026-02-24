@@ -41,4 +41,48 @@ class OrdersService {
       throw Exception('Error fetching order: $e');
     }
   }
+
+  // Create a new order
+  Future<Order> createOrder({
+    required String storeId,
+    required List<Map<String, dynamic>> items,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/orders'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'store_id': storeId,
+          'details': {
+            'items': items,
+          },
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return Order.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to create order: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error creating order: $e');
+    }
+  }
+
+  // Delete an order
+  Future<void> deleteOrder(String id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/orders/$id'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode != 204) {
+        throw Exception('Failed to delete order: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error deleting order: $e');
+    }
+  }
+
 }
