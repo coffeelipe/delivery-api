@@ -9,6 +9,7 @@ class DashboardColumn extends StatelessWidget {
   final IconData icon;
   final Function(Order) onOrderTap;
   final Function(Order)? onMoveToNextStatus;
+  final VoidCallback? onCreateOrder;
 
   const DashboardColumn({
     super.key,
@@ -18,6 +19,7 @@ class DashboardColumn extends StatelessWidget {
     required this.icon,
     required this.onOrderTap,
     this.onMoveToNextStatus,
+    this.onCreateOrder,
   });
 
   @override
@@ -63,6 +65,18 @@ class DashboardColumn extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (onCreateOrder != null) ...[
+                  IconButton(
+                    icon: const Icon(Icons.add_circle),
+                    color: color,
+                    iconSize: 24,
+                    onPressed: onCreateOrder,
+                    tooltip: 'Criar novo pedido',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -100,6 +114,22 @@ class DashboardColumn extends StatelessWidget {
                             fontSize: 14,
                           ),
                         ),
+                        if (onCreateOrder != null) ...[
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: onCreateOrder,
+                            icon: const Icon(Icons.add),
+                            label: const Text('Novo Pedido'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: color,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   )
@@ -112,9 +142,7 @@ class DashboardColumn extends StatelessWidget {
                       return OrderCard(
                         order: order,
                         onTap: () => onOrderTap(order),
-                        label: Text(
-                          _getNextStatusLabel(order.status),
-                        ),
+                        label: Text(_getNextStatusLabel(order.status)),
                         icon: _getIconForStatus(order.status),
                         onPressed: canMoveToNext && onMoveToNextStatus != null
                             ? () => onMoveToNextStatus!(order)
