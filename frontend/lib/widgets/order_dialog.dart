@@ -263,4 +263,51 @@ class OrderDialog extends StatelessWidget {
     );
   }
 
+  Widget _buildAddressInfo(Map<String, dynamic> address) {
+    final street = address['street_name'];
+    final number = address['street_number'];
+    final neighborhood = address['neighborhood'];
+    final city = address['city'];
+    final state = address['state'];
+    final postalCode = address['postal_code'];
+    final reference = address['reference'];
+
+    final addressParts = <String>[];
+    if (street != null) addressParts.add(street);
+    if (number != null) addressParts.add(number.toString());
+    if (neighborhood != null) addressParts.add(neighborhood);
+    if (city != null && state != null) addressParts.add('$city - $state');
+    if (postalCode != null) addressParts.add('CEP: $postalCode');
+
+    return Card(
+      color: Colors.blue.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (addressParts.isNotEmpty)
+              Text(
+                addressParts.join(', '),
+                style: const TextStyle(fontSize: 13),
+              ),
+            if (reference != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  'Referência: $reference',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.black54,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusHistory(dynamic status) {
 }
