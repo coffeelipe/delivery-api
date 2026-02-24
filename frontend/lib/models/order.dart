@@ -1,10 +1,4 @@
-enum OrderStatus {
-  received,
-  confirmed,
-  dispatched,
-  delivered,
-  canceled,
-}
+enum OrderStatus { received, confirmed, dispatched, delivered, canceled }
 
 class Order {
   final String id;
@@ -26,15 +20,15 @@ class Order {
   String get statusLabel {
     switch (status) {
       case OrderStatus.received:
-        return 'RECEIVED';
+        return 'RECEBIDO';
       case OrderStatus.confirmed:
-        return 'CONFIRMED';
+        return 'CONFIRMADO';
       case OrderStatus.dispatched:
-        return 'DISPATCHED';
+        return 'DESPACHADO';
       case OrderStatus.delivered:
-        return 'DELIVERED';
+        return 'ENTREGUE';
       case OrderStatus.canceled:
-        return 'CANCELED';
+        return 'CANCELADO';
     }
   }
 
@@ -66,19 +60,21 @@ class Order {
 
     // Combine items into a details string
     final items = details['items'] as List<dynamic>? ?? [];
-    final itemsString = items.map((item) {
-      final name = item['name'] ?? '';
-      final quantity = item['quantity'] ?? 1;
-      return '$quantity x $name';
-    }).join(', ');
+    final itemsString = items
+        .map((item) {
+          final name = item['name'] ?? '';
+          final quantity = item['quantity'] ?? 1;
+          return '$quantity x $name';
+        })
+        .join(', ');
 
     return Order(
       id: json['id'] as String,
       customerName: customer['name'] as String? ?? 'Unknown',
       details: itemsString,
       timestamp: createdAt != null
-        ? DateTime.fromMillisecondsSinceEpoch(createdAt)
-        : DateTime.now(),
+          ? DateTime.fromMillisecondsSinceEpoch(createdAt)
+          : DateTime.now(),
       status: _parseStatus(lastStatusName),
       total: totalPrice.toDouble(),
     );
