@@ -382,4 +382,8 @@ class OrderDialog extends StatelessWidget {
         return status;
     }
   }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('dd/MM/yyyy HH:mm').format(date);
+  }
 }
