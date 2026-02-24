@@ -310,4 +310,45 @@ class OrderDialog extends StatelessWidget {
   }
 
   Widget _buildStatusHistory(dynamic status) {
+    final name = status['name'] ?? 'N/A';
+    final createdAt = status['created_at'] as int?;
+    final origin = status['origin'] ?? 'N/A';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 8),
+      child: Row(
+        children: [
+          const Icon(Icons.circle, size: 8, color: Colors.grey),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _formatStatusName(name),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  createdAt != null
+                      ? _formatDate(
+                          DateTime.fromMillisecondsSinceEpoch(createdAt),
+                        )
+                      : 'Data não disponível',
+                  style: const TextStyle(fontSize: 11, color: Colors.black54),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            origin,
+            style: const TextStyle(fontSize: 11, color: Colors.black45),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
