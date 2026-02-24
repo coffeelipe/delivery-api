@@ -351,4 +351,35 @@ class OrderDialog extends StatelessWidget {
     );
   }
 
+  String _formatPaymentMethod(String method) {
+    switch (method.toUpperCase()) {
+      case 'CREDIT_CARD':
+        return 'Cartão de Crédito';
+      case 'DEBIT_CARD':
+        return 'Cartão de Débito';
+      case 'PIX':
+        return 'PIX';
+      case 'CASH':
+        return 'Dinheiro';
+      default:
+        return method;
+    }
+  }
+
+  String _formatStatusName(String status) {
+    switch (status.toUpperCase()) {
+      case 'RECEIVED':
+        return 'Recebido';
+      case 'CONFIRMED':
+        return 'Confirmado';
+      case 'DISPATCHED':
+        return 'Despachado';
+      case 'DELIVERED':
+        return 'Entregue';
+      case 'CANCELED':
+        return 'Cancelado';
+      default:
+        return status;
+    }
+  }
 }
