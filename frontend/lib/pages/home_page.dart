@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/widgets/stat_card.dart';
 import '../models/order.dart';
 import '../widgets/dashboard_column.dart';
+import '../services/orders_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,12 +12,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final OrdersService _ordersService = OrdersService();
   List<Order> orders = [];
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _initializeSampleData();
+    _loadOrders();
   }
 
   @override
@@ -34,165 +38,163 @@ class _HomePageState extends State<HomePage> {
             fontSize: 24,
           ),
         ),
-      ),
-      body: Column(
-        children: [
-          // Stats Summary
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: StatCard(
-                    label: 'Total de Pedidos',
-                    value: orders.length.toString(),
-                    icon: Icons.receipt_long,
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: StatCard(
-                    label: 'Ativos',
-                    value: orders
-                        .where(
-                          (o) =>
-                              o.status != OrderStatus.delivered &&
-                              o.status != OrderStatus.canceled,
-                        )
-                        .length
-                        .toString(),
-                    icon: Icons.pending_actions,
-                    color: Colors.orange,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: StatCard(
-                    label: 'Entregues',
-                    value: orders
-                        .where((o) => o.status == OrderStatus.delivered)
-                        .length
-                        .toString(),
-                    icon: Icons.check_circle,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
-          // Dashboard
-          Expanded(
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.all(16),
-              children: [
-                DashboardColumn(
-                  title: 'RECEBIDO',
-                  orders: _getOrdersByStatus(OrderStatus.received),
-                  color: Colors.orange,
-                  icon: Icons.inbox,
-                  onOrderTap: _showOrderDialog,
-                  onMoveToNextStatus: _moveToNextStatus,
-                ),
-                DashboardColumn(
-                  title: 'CONFIRMADO',
-                  orders: _getOrdersByStatus(OrderStatus.confirmed),
-                  color: Colors.blue,
-                  icon: Icons.check_circle_outline,
-                  onOrderTap: _showOrderDialog,
-                  onMoveToNextStatus: _moveToNextStatus,
-                ),
-                DashboardColumn(
-                  title: 'EM ROTA',
-                  orders: _getOrdersByStatus(OrderStatus.dispatched),
-                  color: Colors.purple,
-                  icon: Icons.local_shipping_outlined,
-                  onOrderTap: _showOrderDialog,
-                  onMoveToNextStatus: _moveToNextStatus,
-                ),
-                DashboardColumn(
-                  title: 'ENTREGUE',
-                  orders: _getOrdersByStatus(OrderStatus.delivered),
-                  color: Colors.green,
-                  icon: Icons.done_all,
-                  onOrderTap: _showOrderDialog,
-                ),
-                DashboardColumn(
-                  title: 'CANCELADO',
-                  orders: _getOrdersByStatus(OrderStatus.canceled),
-                  color: Colors.red,
-                  icon: Icons.cancel_outlined,
-                  onOrderTap: _showOrderDialog,
-                ),
-              ],
-            ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.black87),
+            onPressed: _loadOrders,
+            tooltip: 'Atualizar',
           ),
         ],
       ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Erro ao carregar pedidos',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _errorMessage!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: _loadOrders,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Tentar Novamente'),
+                  ),
+                ],
+              ),
+            )
+          : Column(
+              children: [
+                // Stats Summary
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: StatCard(
+                          label: 'Total de Pedidos',
+                          value: orders.length.toString(),
+                          icon: Icons.receipt_long,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: StatCard(
+                          label: 'Ativos',
+                          value: orders
+                              .where(
+                                (o) =>
+                                    o.status != OrderStatus.delivered &&
+                                    o.status != OrderStatus.canceled,
+                              )
+                              .length
+                              .toString(),
+                          icon: Icons.pending_actions,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: StatCard(
+                          label: 'Entregues',
+                          value: orders
+                              .where((o) => o.status == OrderStatus.delivered)
+                              .length
+                              .toString(),
+                          icon: Icons.check_circle,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                // Dashboard
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      DashboardColumn(
+                        title: 'RECEBIDO',
+                        orders: _getOrdersByStatus(OrderStatus.received),
+                        color: Colors.orange,
+                        icon: Icons.inbox,
+                        onOrderTap: _showOrderDialog,
+                        onMoveToNextStatus: _moveToNextStatus,
+                      ),
+                      DashboardColumn(
+                        title: 'CONFIRMADO',
+                        orders: _getOrdersByStatus(OrderStatus.confirmed),
+                        color: Colors.blue,
+                        icon: Icons.check_circle_outline,
+                        onOrderTap: _showOrderDialog,
+                        onMoveToNextStatus: _moveToNextStatus,
+                      ),
+                      DashboardColumn(
+                        title: 'EM ROTA',
+                        orders: _getOrdersByStatus(OrderStatus.dispatched),
+                        color: Colors.purple,
+                        icon: Icons.local_shipping_outlined,
+                        onOrderTap: _showOrderDialog,
+                        onMoveToNextStatus: _moveToNextStatus,
+                      ),
+                      DashboardColumn(
+                        title: 'ENTREGUE',
+                        orders: _getOrdersByStatus(OrderStatus.delivered),
+                        color: Colors.green,
+                        icon: Icons.done_all,
+                        onOrderTap: _showOrderDialog,
+                      ),
+                      DashboardColumn(
+                        title: 'CANCELADO',
+                        orders: _getOrdersByStatus(OrderStatus.canceled),
+                        color: Colors.red,
+                        icon: Icons.cancel_outlined,
+                        onOrderTap: _showOrderDialog,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
     );
   }
 
-  void _initializeSampleData() {
-    orders = [
-      Order(
-        id: '001',
-        customerName: 'John Smith',
-        details: '2x Burger, 1x Fries, 1x Coke',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
-        status: OrderStatus.received,
-        total: 24.99,
-      ),
-      Order(
-        id: '002',
-        customerName: 'Sarah Johnson',
-        details: '1x Pizza Margherita, 1x Salad',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 12)),
-        status: OrderStatus.received,
-        total: 32.50,
-      ),
-      Order(
-        id: '003',
-        customerName: 'Mike Davis',
-        details: '3x Tacos, 1x Burrito, 2x Nachos',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 18)),
-        status: OrderStatus.confirmed,
-        total: 45.75,
-      ),
-      Order(
-        id: '004',
-        customerName: 'Emily Brown',
-        details: '1x Caesar Salad, 1x Soup',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 25)),
-        status: OrderStatus.confirmed,
-        total: 18.99,
-      ),
-      Order(
-        id: '005',
-        customerName: 'David Wilson',
-        details: '2x Pasta Carbonara, 1x Tiramisu',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 32)),
-        status: OrderStatus.dispatched,
-        total: 56.00,
-      ),
-      Order(
-        id: '006',
-        customerName: 'Lisa Anderson',
-        details: '1x Sushi Combo, 1x Miso Soup',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
-        status: OrderStatus.delivered,
-        total: 38.50,
-      ),
-      Order(
-        id: '007',
-        customerName: 'Tom Martinez',
-        details: '1x Steak, 1x Mashed Potatoes',
-        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
-        status: OrderStatus.delivered,
-        total: 62.99,
-      ),
-    ];
+  Future<void> _loadOrders() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final fetchedOrders = await _ordersService.fetchOrders();
+      setState(() {
+        orders = fetchedOrders;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
   List<Order> _getOrdersByStatus(OrderStatus status) {
@@ -203,7 +205,7 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Pedido #${order.id}'),
+        title: Text('Pedido #${order.id.substring(0, 8)}...'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,11 +232,9 @@ class _HomePageState extends State<HomePage> {
         actions: [
           if (order.status == OrderStatus.received)
             TextButton.icon(
-              onPressed: () {
-                setState(() {
-                  order.status = OrderStatus.confirmed;
-                });
+              onPressed: () async {
                 Navigator.pop(context);
+                await _updateOrderStatus(order);
               },
               icon: const Icon(Icons.check_circle),
               label: const Text('Confirmar'),
@@ -242,11 +242,9 @@ class _HomePageState extends State<HomePage> {
             ),
           if (order.status == OrderStatus.confirmed)
             TextButton.icon(
-              onPressed: () {
-                setState(() {
-                  order.status = OrderStatus.dispatched;
-                });
+              onPressed: () async {
                 Navigator.pop(context);
+                await _updateOrderStatus(order);
               },
               icon: const Icon(Icons.local_shipping),
               label: const Text('Em Rota'),
@@ -254,11 +252,9 @@ class _HomePageState extends State<HomePage> {
             ),
           if (order.status == OrderStatus.dispatched)
             TextButton.icon(
-              onPressed: () {
-                setState(() {
-                  order.status = OrderStatus.delivered;
-                });
+              onPressed: () async {
                 Navigator.pop(context);
+                await _updateOrderStatus(order);
               },
               icon: const Icon(Icons.done_all),
               label: const Text('Entregar'),
@@ -267,11 +263,9 @@ class _HomePageState extends State<HomePage> {
           if (order.status != OrderStatus.delivered &&
               order.status != OrderStatus.canceled)
             TextButton.icon(
-              onPressed: () {
-                setState(() {
-                  order.status = OrderStatus.canceled;
-                });
+              onPressed: () async {
                 Navigator.pop(context);
+                await _cancelOrder(order);
               },
               icon: const Icon(Icons.cancel),
               label: const Text('Cancelar'),
@@ -286,21 +280,55 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _moveToNextStatus(Order order) {
-    setState(() {
-      switch (order.status) {
-        case OrderStatus.received:
-          order.status = OrderStatus.confirmed;
-          break;
-        case OrderStatus.confirmed:
-          order.status = OrderStatus.dispatched;
-          break;
-        case OrderStatus.dispatched:
-          order.status = OrderStatus.delivered;
-          break;
-        default:
-          break;
+  Future<void> _updateOrderStatus(Order order) async {
+    try {
+      await _ordersService.advanceOrderStatus(order.id);
+      await _loadOrders();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Status atualizado com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao atualizar status: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _cancelOrder(Order order) async {
+    try {
+      await _ordersService.cancelOrder(order.id);
+      await _loadOrders();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pedido cancelado com sucesso!'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao cancelar pedido: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _moveToNextStatus(Order order) async {
+    await _updateOrderStatus(order);
   }
 }
