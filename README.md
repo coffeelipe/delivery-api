@@ -370,3 +370,4 @@ Este projeto foi desenvolvido para fins educacionais como parte de um desafio t√
 ## Contato
 
 Desenvolvido por Felipe como parte do processo seletivo Coco Bambu.
+fpontes.dev@gmail.com
