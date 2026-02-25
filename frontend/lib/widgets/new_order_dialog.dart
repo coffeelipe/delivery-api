@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/store.dart';
+import '../services/address_service.dart';
 
 class NewOrderDialog extends StatefulWidget {
   final Future<void> Function({
@@ -38,6 +39,8 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
 
   final List<OrderItem> _items = [OrderItem()];
   bool _isSubmitting = false;
+  bool _isFetchingAddress = false;
+  final _addressService = AddressService();
 
   @override
   void dispose() {
@@ -62,6 +65,66 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
       final price = double.tryParse(item.priceController.text) ?? 0.0;
       return sum + (quantity * price);
     });
+  }
+
+  Future<void> _fetchAddressFromCep(String cep) async {
+    if (_isFetchingAddress) return;
+
+    final cleanCep = cep.replaceAll(RegExp(r'[^0-9]'), '');
+    if (cleanCep.length != 8) return;
+
+    setState(() {
+      _isFetchingAddress = true;
+    });
+
+    try {
+      final address = await _addressService.fetchAddressByCep(cleanCep);
+
+      if (!mounted) return;
+
+      if (address != null) {
+        // Fill in the address fields
+        _streetNameController.text = address['street'] ?? '';
+        _neighborhoodController.text = address['neighborhood'] ?? '';
+        _cityController.text = address['city'] ?? '';
+        _stateController.text = address['state'] ?? '';
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Endereço preenchido automaticamente'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'CEP não encontrado. Por favor, preencha o endereço manualmente.',
+            ),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Erro ao buscar endereço. Por favor, preencha manualmente.',
+          ),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFetchingAddress = false;
+        });
+      }
+    }
   }
 
   @override
@@ -261,12 +324,28 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _postalCodeController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'CEP',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     isDense: true,
                     hintText: '70.000-000',
+                    suffixIcon: _isFetchingAddress
+                        ? const Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : null,
                   ),
+                  onChanged: (value) {
+                    final cleanCep = value.replaceAll(RegExp(r'[^0-9]'), '');
+                    if (cleanCep.length == 8) {
+                      _fetchAddressFromCep(cleanCep);
+                    }
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'CEP obrigatório';
