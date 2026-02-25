@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Build directories
+build/
+.dart_tool/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+README*
+
+# Testing
+test/
+
+# Android
+android/
+ios/
+macos/
+linux/
+windows/
+
+# Web files (will be built in container)
+web/favicon.png
+web/icons/
+
+# Dependencies (will be installed in container)
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/

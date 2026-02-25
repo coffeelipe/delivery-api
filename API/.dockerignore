@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+
+# Logs
+log/*
+tmp/*
+*.log
+
+# Database
+storage/*.sqlite3
+storage/*.sqlite3-*
+
+# Testing
+spec/
+test/
+
+# Documentation
+*.md
+README*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+tmp/cache/
+tmp/pids/
+tmp/sockets/
+tmp/storage/
+
+# Dependencies (will be installed in container)
+vendor/bundle/

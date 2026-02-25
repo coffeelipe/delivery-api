@@ -1,0 +1,54 @@
+services:
+  # Rails API Backend
+  api:
+    build:
+      context: ./API
+      dockerfile: Dockerfile
+    container_name: delivery-api
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persist SQLite database
+      - api_storage:/app/storage
+      - api_tmp:/app/tmp
+    environment:
+      - RAILS_ENV=production
+      - RAILS_LOG_TO_STDOUT=true
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+    networks:
+      - delivery-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/orders"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Flutter Web Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: delivery-frontend
+    ports:
+      - "8080:80"
+    environment:
+      # Configure API URL - use localhost:3000 for browser access
+      - API_URL=http://localhost:3000
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - delivery-network
+    restart: unless-stopped
+
+volumes:
+  api_storage:
+    driver: local
+  api_tmp:
+    driver: local
+
+networks:
+  delivery-network:
+    driver: bridge
