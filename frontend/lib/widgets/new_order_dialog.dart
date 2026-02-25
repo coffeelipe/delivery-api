@@ -88,14 +88,6 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
         _neighborhoodController.text = address['neighborhood'] ?? '';
         _cityController.text = address['city'] ?? '';
         _stateController.text = address['state'] ?? '';
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Endereço preenchido automaticamente'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
