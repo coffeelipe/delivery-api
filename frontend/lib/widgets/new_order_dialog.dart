@@ -342,7 +342,6 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                               _isPrepaid = value ?? true;
                             });
                           },
-                          activeColor: Colors.green.shade600,
                         ),
                         const Text('Pago'),
                       ],
@@ -371,9 +370,6 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                       },
                       icon: const Icon(Icons.add),
                       label: const Text('Adicionar Item'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.green.shade700,
-                      ),
                     ),
                   ],
                 ),
@@ -556,11 +552,6 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
         ),
         ElevatedButton.icon(
           onPressed: _isSubmitting ? null : _submitForm,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green.shade600,
-            foregroundColor: Colors.white,
-            disabledBackgroundColor: Colors.grey.shade400,
-          ),
           icon: _isSubmitting
               ? const SizedBox(
                   width: 16,
