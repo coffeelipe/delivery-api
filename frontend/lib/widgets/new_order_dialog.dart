@@ -124,6 +124,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.person),
                     isDense: true,
+                    hintText: 'Nome',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -168,6 +169,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                           labelText: 'Rua',
                           border: OutlineInputBorder(),
                           isDense: true,
+                          hintText: 'Avenida das Pitangueiras',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -186,6 +188,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                           labelText: 'Número',
                           border: OutlineInputBorder(),
                           isDense: true,
+                          hintText: '123',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -204,6 +207,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                     labelText: 'Bairro',
                     border: OutlineInputBorder(),
                     isDense: true,
+                    hintText: 'Asa Sul',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -223,6 +227,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                           labelText: 'Cidade',
                           border: OutlineInputBorder(),
                           isDense: true,
+                          hintText: 'Brasília',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -241,6 +246,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                           labelText: 'Estado',
                           border: OutlineInputBorder(),
                           isDense: true,
+                          hintText: 'DF',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -275,6 +281,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                     labelText: 'Ponto de Referência (opcional)',
                     border: OutlineInputBorder(),
                     isDense: true,
+                    hintText: 'Próximo ao mercado',
                   ),
                   maxLines: 2,
                 ),
@@ -335,6 +342,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                               _isPrepaid = value ?? true;
                             });
                           },
+                          activeColor: Colors.green.shade600,
                         ),
                         const Text('Pago'),
                       ],
@@ -363,6 +371,9 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                       },
                       icon: const Icon(Icons.add),
                       label: const Text('Adicionar Item'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.green.shade700,
+                      ),
                     ),
                   ],
                 ),
@@ -411,6 +422,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                               labelText: 'Nome',
                               border: OutlineInputBorder(),
                               isDense: true,
+                              hintText: 'Pizza Margherita',
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -455,6 +467,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                                     labelText: 'Preço (R\$)',
                                     border: OutlineInputBorder(),
                                     isDense: true,
+                                    hintText: '45.90',
                                   ),
                                   keyboardType:
                                       const TextInputType.numberWithOptions(
@@ -487,6 +500,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                               labelText: 'Observações (opcional)',
                               border: OutlineInputBorder(),
                               isDense: true,
+                              hintText: 'Sem cebola, bem passada',
                             ),
                             maxLines: 2,
                           ),
@@ -535,15 +549,26 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.grey.shade700,
+          ),
           child: const Text('Cancelar'),
         ),
         ElevatedButton.icon(
           onPressed: _isSubmitting ? null : _submitForm,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green.shade600,
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: Colors.grey.shade400,
+          ),
           icon: _isSubmitting
               ? const SizedBox(
                   width: 16,
                   height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
                 )
               : const Icon(Icons.save),
           label: Text(_isSubmitting ? 'Criando...' : 'Novo Pedido'),
