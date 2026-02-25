@@ -129,25 +129,32 @@ docker compose logs -f api
 docker compose logs -f frontend
 ```
 
-### Passo 7: Parar os Serviços
+### Passo 7: Parar e Limpar os Serviços
 
-Para parar os containers sem removê-los:
+#### Parar containers (mantém dados)
 
 ```bash
+# Parar sem remover containers
 docker compose stop
-```
 
-Para parar e remover os containers (os dados persistidos em volumes serão mantidos):
-
-```bash
+# Parar e remover containers (mantém volumes/dados)
 docker compose down
 ```
 
-Para parar, remover containers E limpar volumes (apaga o banco de dados):
+#### Limpeza completa (remove tudo)
 
 ```bash
+# Parar e remover containers + volumes (APAGA O BANCO DE DADOS)
 docker compose down -v
+
+# Remover volumes específicos manualmente
+docker volume rm delivery-api_api_storage delivery-api_api_tmp
+
+# Remover também as imagens buildadas
+docker compose down --rmi all -v
 ```
+
+**Atenção**: O comando `docker compose down -v` apaga permanentemente o banco de dados SQLite e todos os pedidos criados. Use apenas se quiser começar do zero.
 
 ---
 

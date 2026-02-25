@@ -28,6 +28,19 @@ Aguarde o build das imagens e a inicialização dos serviços. Quando estiver pr
 
 Nenhuma configuração adicional é necessária. O arquivo .env só é necessário caso queira sobrescrever as variáveis de ambiente padrão (ex: SECRET_KEY_BASE, API_PORT).
 
+### Limpeza após execução
+
+```bash
+# Parar os containers
+docker compose down
+
+# Parar e remover containers + volumes (apaga o banco de dados)
+docker compose down -v
+
+# Remover apenas volumes específicos se necessário
+docker volume rm delivery-api_api_storage delivery-api_api_tmp
+```
+
 ## Tecnologias Utilizadas
 
 ### Backend
