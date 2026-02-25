@@ -20,10 +20,13 @@ cd delivery-api
 # 2. Inicie os containers
 docker compose up --build
 ```
+
 Aguarde o build das imagens e a inicialização dos serviços. Quando estiver pronto:
 - **Frontend**: http://localhost:8080
 - **API**: http://localhost:3000
 - para detalhes completos do processo, consulte [DEPLOYMENT.md](DEPLOYMENT.md).
+
+Nenhuma configuração adicional é necessária. O arquivo .env só é necessário caso queira sobrescrever as variáveis de ambiente padrão (ex: SECRET_KEY_BASE, API_PORT).
 
 ## Tecnologias Utilizadas
 
@@ -105,6 +108,7 @@ RECEIVED → CONFIRMED → DISPATCHED → DELIVERED
 - Dashboard visual com cards de pedidos organizados por status
 - Indicadores de métricas (total de pedidos por status)
 - Criação de novos pedidos via formulário
+- Preenchimento automático de endereço via CEP (integração com ViaCEP)
 - Visualização de detalhes e histórico completo de status
 - Botões de ação para avançar status ou cancelar
 - Exclusão de pedidos
