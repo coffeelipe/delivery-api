@@ -155,8 +155,7 @@ class OrderDialog extends StatelessWidget {
             label: const Text('Cancelar'),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
           ),
-        if (debugMode && onDelete != null) ...[
-          const Spacer(),
+        if (debugMode && onDelete != null)
           TextButton.icon(
             onPressed: onDelete,
             icon: const Icon(Icons.delete_forever),
@@ -166,7 +165,6 @@ class OrderDialog extends StatelessWidget {
               backgroundColor: Colors.red.shade50,
             ),
           ),
-        ],
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Fechar'),
