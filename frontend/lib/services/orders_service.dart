@@ -3,7 +3,11 @@ import 'package:http/http.dart' as http;
 import '../models/order.dart';
 
 class OrdersService {
-  static const String baseUrl = 'http://localhost:3000';
+  // Use environment variable for API URL, fallback to localhost for development
+  static const String baseUrl = String.fromEnvironment(
+    'API_URL',
+    defaultValue: 'http://localhost:3000',
+  );
 
   // Fetch all orders
   Future<List<Order>> fetchOrders() async {
