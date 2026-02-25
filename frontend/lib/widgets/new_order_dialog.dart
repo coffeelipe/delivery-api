@@ -6,12 +6,10 @@ class NewOrderDialog extends StatefulWidget {
   final Future<void> Function({
     required String storeId,
     required Map<String, dynamic> details,
-  }) onCreateOrder;
+  })
+  onCreateOrder;
 
-  const NewOrderDialog({
-    super.key,
-    required this.onCreateOrder,
-  });
+  const NewOrderDialog({super.key, required this.onCreateOrder});
 
   @override
   State<NewOrderDialog> createState() => _NewOrderDialogState();
@@ -81,6 +79,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 8),
                 // Store Dropdown
                 DropdownButtonFormField<Store>(
                   initialValue: _selectedStore,
@@ -115,10 +114,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                 // Customer Section
                 const Text(
                   'Informações do Cliente',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -159,10 +155,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                 // Delivery Address Section
                 const Text(
                   'Endereço de Entrega',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -291,10 +284,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                 // Payment Section
                 const Text(
                   'Pagamento',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -308,11 +298,23 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                           isDense: true,
                         ),
                         items: const [
-                          DropdownMenuItem(value: 'CREDIT_CARD', child: Text('Cartão de Crédito')),
-                          DropdownMenuItem(value: 'DEBIT_CARD', child: Text('Cartão de Débito')),
+                          DropdownMenuItem(
+                            value: 'CREDIT_CARD',
+                            child: Text('Cartão de Crédito'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'DEBIT_CARD',
+                            child: Text('Cartão de Débito'),
+                          ),
                           DropdownMenuItem(value: 'PIX', child: Text('PIX')),
-                          DropdownMenuItem(value: 'CASH', child: Text('Dinheiro')),
-                          DropdownMenuItem(value: 'VR', child: Text('Vale Refeição')),
+                          DropdownMenuItem(
+                            value: 'CASH',
+                            child: Text('Dinheiro'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'VR',
+                            child: Text('Vale Refeição'),
+                          ),
                         ],
                         onChanged: (value) {
                           if (value != null) {
@@ -454,9 +456,14 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                                     border: OutlineInputBorder(),
                                     isDense: true,
                                   ),
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                        decimal: true,
+                                      ),
                                   inputFormatters: [
-                                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d+\.?\d{0,2}'),
+                                    ),
                                   ],
                                   onChanged: (_) => setState(() {}),
                                   validator: (value) {
@@ -502,7 +509,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-const Text(
+                      const Text(
                         'Total do Pedido:',
                         style: TextStyle(
                           fontSize: 16,
@@ -590,23 +597,13 @@ const Text(
             'reference': _referenceController.text,
         },
         'payments': [
-          {
-            'value': total,
-            'origin': _paymentMethod,
-            'prepaid': _isPrepaid,
-          }
+          {'value': total, 'origin': _paymentMethod, 'prepaid': _isPrepaid},
         ],
-        'store': {
-          'id': _selectedStore.id,
-          'name': _selectedStore.name,
-        },
+        'store': {'id': _selectedStore.id, 'name': _selectedStore.name},
         'created_at': DateTime.now().millisecondsSinceEpoch,
       };
 
-      await widget.onCreateOrder(
-        storeId: _selectedStore.id,
-        details: details,
-      );
+      await widget.onCreateOrder(storeId: _selectedStore.id, details: details);
 
       if (mounted) {
         Navigator.pop(context);
@@ -632,7 +629,9 @@ const Text(
 
 class OrderItem {
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController quantityController = TextEditingController(text: '1');
+  final TextEditingController quantityController = TextEditingController(
+    text: '1',
+  );
   final TextEditingController priceController = TextEditingController();
   final TextEditingController observationsController = TextEditingController();
 
