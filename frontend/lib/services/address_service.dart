@@ -19,7 +19,7 @@ class AddressService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
+
         // ViaCEP returns {"erro": true} when CEP is not found
         if (data['erro'] == true) {
           return null;
