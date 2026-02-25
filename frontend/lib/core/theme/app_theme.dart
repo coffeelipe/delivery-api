@@ -4,15 +4,12 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.green,
-        primary: Colors.green.shade600,
-      ),
       inputDecorationTheme: InputDecorationTheme(
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.green.shade600, width: 2),
         ),
+        floatingLabelStyle: TextStyle(color: Colors.green.shade600),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: Colors.green.shade600,
