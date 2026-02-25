@@ -222,6 +222,38 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
+                TextFormField(
+                  controller: _postalCodeController,
+                  decoration: InputDecoration(
+                    labelText: 'CEP',
+                    border: const OutlineInputBorder(),
+                    isDense: true,
+                    hintText: '70.000-000',
+                    suffixIcon: _isFetchingAddress
+                        ? const Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : null,
+                  ),
+                  onChanged: (value) {
+                    final cleanCep = value.replaceAll(RegExp(r'[^0-9]'), '');
+                    if (cleanCep.length == 8) {
+                      _fetchAddressFromCep(cleanCep);
+                    }
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'CEP obrigatório';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
@@ -320,38 +352,6 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _postalCodeController,
-                  decoration: InputDecoration(
-                    labelText: 'CEP',
-                    border: const OutlineInputBorder(),
-                    isDense: true,
-                    hintText: '70.000-000',
-                    suffixIcon: _isFetchingAddress
-                        ? const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          )
-                        : null,
-                  ),
-                  onChanged: (value) {
-                    final cleanCep = value.replaceAll(RegExp(r'[^0-9]'), '');
-                    if (cleanCep.length == 8) {
-                      _fetchAddressFromCep(cleanCep);
-                    }
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'CEP obrigatório';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -624,9 +624,7 @@ class _NewOrderDialogState extends State<NewOrderDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.pop(context),
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.grey.shade700,
-          ),
+          style: TextButton.styleFrom(foregroundColor: Colors.grey.shade700),
           child: const Text('Cancelar'),
         ),
         ElevatedButton.icon(
