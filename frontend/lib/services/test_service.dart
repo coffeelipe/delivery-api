@@ -1,4 +1,4 @@
-import 'package:frontend/utils/utils.dart';
+import 'package:frontend/core/utils/utils.dart';
 
 import 'orders_service.dart';
 
