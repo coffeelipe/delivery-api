@@ -14,7 +14,7 @@ services:
     environment:
       - RAILS_ENV=production
       - RAILS_LOG_TO_STDOUT=true
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:-}
     networks:
       - delivery-network
     healthcheck:
